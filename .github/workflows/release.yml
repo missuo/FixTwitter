@@ -7,10 +7,9 @@ on:
 jobs:
   build:
     name: Build
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
     strategy:
       matrix:
-        goos: [darwin]
         goarch: [amd64, arm64]
     steps:
     - name: Set up Go
@@ -21,46 +20,23 @@ jobs:
     - name: Check out code
       uses: actions/checkout@v4
 
-    - name: Install macOS cross-compilation tools
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y clang llvm-dev
-
-    - name: Install osxcross
-      run: |
-        git clone https://github.com/tpoechtrager/osxcross
-        cd osxcross
-        wget -nc https://s3.dockerproject.org/darwin/v2/MacOSX10.10.sdk.tar.xz
-        mv MacOSX10.10.sdk.tar.xz tarballs/
-        UNATTENDED=yes OSX_VERSION_MIN=10.10 ./build.sh
-        sudo mv target /usr/local/osxcross
-        echo "/usr/local/osxcross/bin" >> $GITHUB_PATH
-
     - name: Build
       env:
-        GOOS: ${{ matrix.goos }}
+        GOOS: darwin
         GOARCH: ${{ matrix.goarch }}
         CGO_ENABLED: 1
-        PATH: "/usr/local/osxcross/bin:$PATH"
       run: |
-        if [ "${{ matrix.goos }}" = "darwin" ] && [ "${{ matrix.goarch }}" = "amd64" ]; then
-          export CC=o64-clang
-          export CXX=o64-clang++
-        elif [ "${{ matrix.goos }}" = "darwin" ] && [ "${{ matrix.goarch }}" = "arm64" ]; then
-          export CC=oa64-clang
-          export CXX=oa64-clang++
-        fi
-        go build -v -o fixtwitter-${{ matrix.goos }}-${{ matrix.goarch }}
+        go build -v -o fixtwitter-darwin-${{ matrix.goarch }}
 
     - name: Upload Artifacts
       uses: actions/upload-artifact@v4
       with:
-        name: fixtwitter-${{ matrix.goos }}-${{ matrix.goarch }}
-        path: fixtwitter-${{ matrix.goos }}-${{ matrix.goarch }}
+        name: fixtwitter-darwin-${{ matrix.goarch }}
+        path: fixtwitter-darwin-${{ matrix.goarch }}
   
     - name: Upload Artifact to Release
       uses: softprops/action-gh-release@v2
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        files: ./fixtwitter-${{ matrix.goos }}-${{ matrix.goarch }}
+        files: ./fixtwitter-darwin-${{ matrix.goarch }}
