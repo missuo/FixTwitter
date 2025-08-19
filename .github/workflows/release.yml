@@ -21,11 +21,27 @@ jobs:
     - name: Check out code
       uses: actions/checkout@v4
 
+    - name: Install macOS cross-compilation tools
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y clang llvm-dev
+
+    - name: Install osxcross
+      run: |
+        git clone https://github.com/tpoechtrager/osxcross
+        cd osxcross
+        wget -nc https://s3.dockerproject.org/darwin/v2/MacOSX10.10.sdk.tar.xz
+        mv MacOSX10.10.sdk.tar.xz tarballs/
+        UNATTENDED=yes OSX_VERSION_MIN=10.10 ./build.sh
+        sudo mv target /usr/local/osxcross
+        echo "/usr/local/osxcross/bin" >> $GITHUB_PATH
+
     - name: Build
       env:
         GOOS: ${{ matrix.goos }}
         GOARCH: ${{ matrix.goarch }}
         CGO_ENABLED: 1
+        PATH: "/usr/local/osxcross/bin:$PATH"
       run: |
         if [ "${{ matrix.goos }}" = "darwin" ] && [ "${{ matrix.goarch }}" = "amd64" ]; then
           export CC=o64-clang
