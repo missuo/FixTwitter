@@ -65,8 +65,8 @@ Requirements:
 - macOS (uses Cocoa framework)
 
 ```bash
-git clone https://github.com/your-username/fixtwitter
-cd fixtwitter
+git clone https://github.com/missuo/FixTwitter
+cd FixTwitter
 go build -o fixtwitter .
 ```
 
