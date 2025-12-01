@@ -98,8 +98,8 @@ func (cm *ClipboardMonitor) ProcessClipboard() {
 
 // replaceXComUrls replaces x.com status URLs with the configured replacement service
 func (cm *ClipboardMonitor) replaceXComUrls(text string) string {
-	// Match x.com status links
-	re := regexp.MustCompile(`https://x\.com/([^/]+/status/\d+)`)
+	// Match x.com status links with optional query parameters
+	re := regexp.MustCompile(`https://x\.com/([^/]+/status/\d+)(?:\?[^\s]*)?`)
 	return re.ReplaceAllString(text, "https://"+cm.replaceService+"/$1")
 }
 
