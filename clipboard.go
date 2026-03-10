@@ -30,9 +30,16 @@ long getChangeCount() {
 */
 import "C"
 import (
+	"net/url"
 	"regexp"
+	"strings"
 	"time"
 	"unsafe"
+)
+
+var (
+	xStatusURLPattern   = regexp.MustCompile(`https://x\.com/([^/\s]+/status/\d+)(?:\?[^\s#]*)?(?:#[^\s]*)?`)
+	instagramURLPattern = regexp.MustCompile(`(?i)https?://(?:[^/\s]+\.)?instagram\.com[^\s]*`)
 )
 
 // ClipboardMonitor monitors clipboard changes and processes Twitter/X.com URLs
@@ -88,19 +95,52 @@ func (cm *ClipboardMonitor) ProcessClipboard() {
 	}
 
 	cm.lastContent = content
-	newContent := cm.replaceXComUrls(content)
-	
+	newContent := cm.normalizeUrls(content)
+
 	if newContent != content {
 		cm.SetClipboardText(newContent)
 		cm.lastContent = newContent
 	}
 }
 
-// replaceXComUrls replaces x.com status URLs with the configured replacement service
-func (cm *ClipboardMonitor) replaceXComUrls(text string) string {
-	// Match x.com status links with optional query parameters
-	re := regexp.MustCompile(`https://x\.com/([^/]+/status/\d+)(?:\?[^\s]*)?`)
-	return re.ReplaceAllString(text, "https://"+cm.replaceService+"/$1")
+// normalizeUrls rewrites supported URLs copied into the clipboard.
+func (cm *ClipboardMonitor) normalizeUrls(text string) string {
+	text = xStatusURLPattern.ReplaceAllString(text, "https://"+cm.replaceService+"/$1")
+	return stripInstagramQueryParams(text)
+}
+
+func stripInstagramQueryParams(text string) string {
+	return instagramURLPattern.ReplaceAllStringFunc(text, func(raw string) string {
+		cleanURL, suffix := trimTrailingURLPunctuation(raw)
+
+		parsed, err := url.Parse(cleanURL)
+		if err != nil {
+			return raw
+		}
+
+		host := strings.ToLower(parsed.Hostname())
+		if host != "instagram.com" && !strings.HasSuffix(host, ".instagram.com") {
+			return raw
+		}
+
+		if parsed.RawQuery == "" {
+			return raw
+		}
+
+		parsed.RawQuery = ""
+		return parsed.String() + suffix
+	})
+}
+
+func trimTrailingURLPunctuation(raw string) (string, string) {
+	trimChars := ".,!?:;)]}\"'"
+	end := len(raw)
+
+	for end > 0 && strings.ContainsRune(trimChars, rune(raw[end-1])) {
+		end--
+	}
+
+	return raw[:end], raw[end:]
 }
 
 // Start begins monitoring clipboard changes in an infinite loop
