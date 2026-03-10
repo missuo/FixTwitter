@@ -123,7 +123,8 @@ func stripInstagramQueryParams(text string) string {
 			return raw
 		}
 
-		if parsed.RawQuery == "" {
+		needsClean := parsed.RawQuery != "" || parsed.Fragment != "" || strings.HasSuffix(parsed.Path, "/")
+		if !needsClean {
 			return raw
 		}
 

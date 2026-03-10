@@ -10,7 +10,7 @@ FixTwitter runs as a background service that monitors your clipboard for support
 - `https://x.com/username/status/123456789?ref=share` → `https://fxtwitter.com/username/status/123456789`
 - `https://x.com/username/status/123456789?ref=share` → `https://no.sb/username/status/123456789`
 - `https://www.instagram.com/yukfanha/?g=5` → `https://www.instagram.com/yukfanha`
-- `https://m.instagram.com/p/abc123/?utm_source=ig_web_copy_link#section` → `https://m.instagram.com/p/abc123#section`
+- `https://m.instagram.com/p/abc123/?utm_source=ig_web_copy_link#section` → `https://m.instagram.com/p/abc123`
 
 ### Instagram support
 

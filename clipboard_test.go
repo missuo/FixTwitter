@@ -36,6 +36,26 @@ func TestNormalizeUrls(t *testing.T) {
 			want: "(https://www.instagram.com/yukfanha).",
 		},
 		{
+			name: "strips fragment only (no query)",
+			in:   "https://www.instagram.com/p/abc123#section",
+			want: "https://www.instagram.com/p/abc123",
+		},
+		{
+			name: "strips trailing slash only",
+			in:   "https://www.instagram.com/yukfanha/",
+			want: "https://www.instagram.com/yukfanha",
+		},
+		{
+			name: "strips query fragment and trailing slash",
+			in:   "https://m.instagram.com/p/abc123/?utm_source=ig_web_copy_link#section",
+			want: "https://m.instagram.com/p/abc123",
+		},
+		{
+			name: "leaves clean instagram url alone",
+			in:   "https://www.instagram.com/p/abc123",
+			want: "https://www.instagram.com/p/abc123",
+		},
+		{
 			name: "leaves non instagram urls alone",
 			in:   "https://example.com/path?a=1",
 			want: "https://example.com/path?a=1",
