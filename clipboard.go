@@ -128,6 +128,8 @@ func stripInstagramQueryParams(text string) string {
 		}
 
 		parsed.RawQuery = ""
+		parsed.Fragment = ""
+		parsed.Path = strings.TrimSuffix(parsed.Path, "/")
 		return parsed.String() + suffix
 	})
 }

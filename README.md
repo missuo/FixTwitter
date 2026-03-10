@@ -9,12 +9,16 @@ FixTwitter runs as a background service that monitors your clipboard for support
 ### Supported URL transformations
 - `https://x.com/username/status/123456789?ref=share` → `https://fxtwitter.com/username/status/123456789`
 - `https://x.com/username/status/123456789?ref=share` → `https://no.sb/username/status/123456789`
-- `https://www.instagram.com/yukfanha/?g=5` → `https://www.instagram.com/yukfanha/`
-- `https://m.instagram.com/p/abc123/?utm_source=ig_web_copy_link#section` → `https://m.instagram.com/p/abc123/#section`
+- `https://www.instagram.com/yukfanha/?g=5` → `https://www.instagram.com/yukfanha`
+- `https://m.instagram.com/p/abc123/?utm_source=ig_web_copy_link#section` → `https://m.instagram.com/p/abc123#section`
 
 ### Instagram support
 
-When an Instagram URL is copied, FixTwitter removes query parameters from `instagram.com` links, including subdomains such as `www.instagram.com` and `m.instagram.com`. This keeps the core link intact, preserves fragments like `#section`, and leaves surrounding punctuation alone.
+When an Instagram URL is copied, FixTwitter removes the entire suffix from `?` onward
+for `instagram.com` links, including subdomains such as `www.instagram.com` and
+`m.instagram.com`. This also trims the trailing `/` before the query so
+`/path/?q=...` becomes `/path`, and `#fragment` parts are removed in the same
+operation.
 
 ## Installation
 

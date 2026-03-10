@@ -18,22 +18,22 @@ func TestNormalizeUrls(t *testing.T) {
 		{
 			name: "strips instagram query on www host",
 			in:   "https://www.instagram.com/yukfanha/?g=5",
-			want: "https://www.instagram.com/yukfanha/",
+			want: "https://www.instagram.com/yukfanha",
 		},
 		{
 			name: "strips instagram query on subdomain",
 			in:   "https://m.instagram.com/p/abc123/?utm_source=ig_web_copy_link",
-			want: "https://m.instagram.com/p/abc123/",
+			want: "https://m.instagram.com/p/abc123",
 		},
 		{
-			name: "preserves instagram fragment",
-			in:   "https://www.instagram.com/p/abc123/?foo=bar#section",
-			want: "https://www.instagram.com/p/abc123/#section",
+			name: "removes fragment when query exists",
+			in:   "https://www.instagram.com/p/abc123?foo=bar#section",
+			want: "https://www.instagram.com/p/abc123",
 		},
 		{
 			name: "preserves trailing punctuation",
 			in:   "(https://www.instagram.com/yukfanha/?g=5).",
-			want: "(https://www.instagram.com/yukfanha/).",
+			want: "(https://www.instagram.com/yukfanha).",
 		},
 		{
 			name: "leaves non instagram urls alone",
